@@ -1,16 +1,12 @@
-"use client";
-
 import { Check, Mic, Radar, ShieldCheck } from "lucide-react";
+import { ConsultScene } from "./illustrations";
 
-// The login-page illustration: a spoken Hindi sentence becoming a structured,
-// provenance-badged English case sheet. Built as HTML/CSS so it stays crisp,
-// themeable and animatable without an image asset.
-
-const BARS = [14, 26, 38, 22, 44, 30, 18, 36, 26, 40, 20, 32, 16, 28, 38, 22, 12];
+// The login-page panel: the consultation scene, the case sheet it produces,
+// and the three things that make the product different. Static.
 
 export function Hero() {
   return (
-    <div className="relative isolate flex h-full flex-col justify-between overflow-hidden p-10 text-white xl:p-14">
+    <div className="relative isolate flex min-h-full flex-col justify-between gap-6 p-10 text-white xl:p-12">
       {/* Backdrop: petrol gradient with a faint chart-paper grid */}
       <div className="absolute inset-0 -z-10 bg-[linear-gradient(160deg,#0f3646_0%,#1b5b75_55%,#12475c_100%)]" />
       <div className="absolute inset-0 -z-10 opacity-[0.07] [background-image:linear-gradient(#fff_1px,transparent_1px),linear-gradient(90deg,#fff_1px,transparent_1px)] [background-size:28px_28px]" />
@@ -23,40 +19,15 @@ export function Hero() {
           <br />
           Sign the record.
         </h1>
-        <p className="mt-4 max-w-[38ch] text-[15px] leading-relaxed text-white/75">
+        <p className="mt-4 max-w-[40ch] text-[15px] leading-relaxed text-white/75">
           The patient speaks Hindi. The record must be English. Shruti listens in the patient&apos;s language and drafts a structured case sheet — every AI word marked, nothing signed until the doctor says so.
         </p>
       </div>
 
-      {/* The illustration */}
-      <div className="my-8 grid gap-3 xl:my-10">
-        {/* Speech bubble with live waveform */}
-        <div className="flex items-center gap-4 rounded-2xl bg-white/10 p-4 ring-1 ring-white/15 backdrop-blur-sm">
-          <span className="relative grid size-11 shrink-0 place-items-center rounded-full bg-white/15">
-            <span className="absolute inline-flex size-full animate-ping rounded-full bg-white/20 [animation-duration:2.4s]" />
-            <Mic className="relative size-5" />
-          </span>
-          <div className="min-w-0 flex-1">
-            <div className="flex h-9 items-end gap-[3px]" aria-hidden>
-              {BARS.map((h, i) => (
-                <span key={i} className="wave-bar w-[3px] rounded-full bg-white/80" style={{ height: `${h}px`, animationDelay: `${i * 90}ms` }} />
-              ))}
-            </div>
-            <p className="mt-1.5 truncate text-[15px]" lang="hi">
-              दो दिन से बुखार है, रात में ज़्यादा बढ़ जाता है…
-            </p>
-          </div>
-          <span className="shrink-0 rounded-full bg-white/15 px-2 py-0.5 font-mono text-[10px] uppercase tracking-[0.1em]">हिन्दी</span>
-        </div>
+      <div className="grid gap-4">
+        <ConsultScene className="mx-auto max-w-[460px]" />
 
-        {/* Arrow */}
-        <div className="flex items-center gap-3 px-2 font-mono text-[10px] uppercase tracking-[0.14em] text-white/55">
-          <span className="h-px flex-1 bg-white/20" />
-          structured by AI · verified by the doctor
-          <span className="h-px flex-1 bg-white/20" />
-        </div>
-
-        {/* Case sheet card */}
+        {/* The case sheet the scene produces */}
         <div className="rounded-2xl bg-white p-4 text-foreground shadow-2xl shadow-black/30">
           <div className="mb-3 flex items-center justify-between border-b pb-2">
             <div>

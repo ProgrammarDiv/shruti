@@ -7,6 +7,7 @@ import { useAsync } from "@/lib/use-async";
 import { ageSex, formatTime, relativeDay } from "@/lib/format";
 import { LANGUAGE_LABELS } from "@/lib/types";
 import { PageHeader } from "@/components/shell/page-header";
+import { EmptyQueue, LanguageMosaic } from "@/components/brand/illustrations";
 import { PatientAvatar } from "@/components/patients/patient-avatar";
 import { StatusBadge, CompletenessRing } from "@/components/consult/status-badge";
 import { Button } from "@/components/ui/button";
@@ -29,7 +30,10 @@ export default function DashboardPage() {
 
   return (
     <>
-      <PageHeader eyebrow={today} title={`${greeting()}${shortName ? `, Dr. ${shortName}` : ""}`} description="What needs you today." />
+      <div className="relative">
+        <PageHeader eyebrow={today} title={`${greeting()}${shortName ? `, Dr. ${shortName}` : ""}`} description="What needs you today." />
+        <LanguageMosaic className="pointer-events-none absolute -top-3 right-0 hidden w-[230px] xl:block" />
+      </div>
 
       <div className="mb-6 grid grid-cols-2 gap-3 lg:grid-cols-4">
         <Stat icon={<Users />} label="Patients today" value={data?.stats.patientsToday} loading={loading} />
@@ -53,7 +57,10 @@ export default function DashboardPage() {
           <CardContent className="flex flex-col divide-y">
             {loading && <RowSkeletons n={3} />}
             {data && data.todaysQueue.length === 0 && (
-              <p className="py-6 text-center text-sm text-muted-foreground">No consultations started yet today.</p>
+              <div className="flex flex-col items-center py-6 text-center">
+                <EmptyQueue className="w-56" />
+                <p className="mt-2 text-sm text-muted-foreground">No consultations started yet today.</p>
+              </div>
             )}
             {data?.todaysQueue.map(({ patient, consultation }) => (
               <div key={consultation.id} className="flex items-center gap-3 py-3 first:pt-0 last:pb-0">

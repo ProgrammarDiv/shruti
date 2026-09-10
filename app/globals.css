@@ -183,27 +183,6 @@
   }
 }
 
-/* Waveform bars on the login hero. */
-@keyframes wave {
-  0%,
-  100% {
-    transform: scaleY(0.35);
-  }
-  50% {
-    transform: scaleY(1);
-  }
-}
-.wave-bar {
-  transform-origin: bottom;
-  animation: wave 1.4s ease-in-out infinite;
-}
-@media (prefers-reduced-motion: reduce) {
-  .wave-bar,
-  .animate-ping {
-    animation: none !important;
-  }
-}
-
 /* The note prints as a plain document: white page, black ink, no chrome. */
 @page {
   margin: 16mm 14mm;

@@ -10,6 +10,7 @@ import { ageSex, formatDate, formatDateTime, relativeDay } from "@/lib/format";
 import { getSection } from "@/lib/clinical";
 import { LANGUAGE_LABELS } from "@/lib/types";
 import { AllergyBanner } from "@/components/patients/allergy-banner";
+import { SignedRecord } from "@/components/brand/illustrations";
 import { PatientAvatar } from "@/components/patients/patient-avatar";
 import { StatusBadge, CompletenessRing } from "@/components/consult/status-badge";
 import { Button } from "@/components/ui/button";
@@ -118,7 +119,10 @@ export default function PatientPage({ params }: PageProps<"/patients/[id]">) {
               </div>
             )}
             {!loading && consultations.length === 0 && (
-              <p className="py-8 text-center text-sm text-muted-foreground">No visits yet. Start the first consultation.</p>
+              <div className="flex flex-col items-center py-8 text-center">
+                <SignedRecord className="w-56" />
+                <p className="mt-2 text-sm text-muted-foreground">No visits yet. Start the first consultation.</p>
+              </div>
             )}
             <ol className="relative flex flex-col gap-0 border-l border-border pl-5">
               {consultations.map((c) => (

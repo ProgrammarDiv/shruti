@@ -53,7 +53,6 @@ export function CompletenessRing({ value, size = 36, className }: { value: numbe
           strokeLinecap="round"
           strokeDasharray={c}
           strokeDashoffset={c * (1 - value / 100)}
-          className="transition-[stroke-dashoffset] duration-500"
         />
       </svg>
       <span className="absolute font-mono text-[10px] font-semibold tnum">{value}</span>

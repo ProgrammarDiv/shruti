@@ -9,6 +9,7 @@ import { useAsync } from "@/lib/use-async";
 import { ageSex, relativeDay } from "@/lib/format";
 import { LANGUAGE_LABELS } from "@/lib/types";
 import { PageHeader } from "@/components/shell/page-header";
+import { EmptyQueue } from "@/components/brand/illustrations";
 import { PatientAvatar } from "@/components/patients/patient-avatar";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -106,6 +107,7 @@ export default function PatientsPage() {
             {patients && patients.length === 0 && (
               <TableRow>
                 <TableCell colSpan={6} className="py-10 text-center text-muted-foreground">
+                  <EmptyQueue className="mx-auto mb-3 w-52" />
                   No patients match &ldquo;{debounced}&rdquo;.{" "}
                   <Link href="/patients/new" className="text-primary underline underline-offset-4">
                     Register a new patient

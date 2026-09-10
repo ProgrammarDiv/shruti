@@ -123,7 +123,7 @@ export function Review({ consultation: c, patient, doctor }: { consultation: Con
       {summaryStatus === "streaming" && (
         <pre className="font-sans min-h-16 whitespace-pre-wrap text-sm leading-relaxed">
           {summary}
-          <span className="ml-0.5 inline-block h-4 w-1.5 animate-pulse bg-prov-ai align-middle" />
+          <span className="ml-0.5 inline-block h-4 w-1.5 bg-prov-ai align-middle" />
         </pre>
       )}
       {summaryStatus === "draft" && (

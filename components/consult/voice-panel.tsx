@@ -7,6 +7,7 @@ import { LANGUAGE_LABELS, SECTION_LABELS, type Language, type SectionKey } from 
 import type { StructuredCase } from "@/lib/ai";
 import { SAMPLE_TRANSCRIPTS } from "@/lib/ai/mock/fixtures";
 import { isSpeechSupported, startRecognition, type Recognizer } from "@/lib/voice/speech";
+import { MicPicture } from "@/components/brand/illustrations";
 import { Button } from "@/components/ui/button";
 import { Textarea } from "@/components/ui/textarea";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
@@ -120,6 +121,10 @@ export function VoicePanel({
   return (
     <div className="flex flex-col gap-3">
       <Panel title="Voice capture">
+        <div className="mb-3 flex items-center gap-3">
+          <MicPicture className="w-14 shrink-0" />
+          <p className="text-xs leading-snug text-muted-foreground">Record in the patient&apos;s language. The transcript stays visible next to whatever the AI drafts from it.</p>
+        </div>
         <div className="mb-3">
           <Select value={language} onValueChange={(v) => onLanguageChange(v as Language)} disabled={recording}>
             <SelectTrigger className="w-full">
@@ -155,12 +160,9 @@ export function VoicePanel({
         </div>
 
         {recording && (
-          <div className="mt-3 flex items-center gap-2 text-xs text-flag">
-            <span className="relative flex size-2.5">
-              <span className="absolute inline-flex size-full animate-ping rounded-full bg-flag opacity-60" />
-              <span className="relative inline-flex size-2.5 rounded-full bg-flag" />
-            </span>
-            Listening in {LANGUAGE_LABELS[language].split(" · ")[0]}
+          <div className="mt-3 flex items-center gap-2 rounded-md border border-flag/30 bg-flag-soft px-2.5 py-1.5 text-xs font-medium text-flag">
+            <span className="inline-flex size-2.5 rounded-full bg-flag" />
+            Listening in {LANGUAGE_LABELS[language].split(" · ")[0]} — {formatSeconds(seconds)}
           </div>
         )}
         {!supported && <p className="mt-2 text-xs text-muted-foreground">This browser has no speech recognition — use Chrome or Edge, or the sample.</p>}

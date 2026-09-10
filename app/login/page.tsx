@@ -15,7 +15,7 @@ import { Label } from "@/components/ui/label";
 export default function LoginPage() {
   return (
     <main className="grid min-h-screen bg-background lg:grid-cols-[1.15fr_1fr]">
-      <aside className="hidden lg:block">
+      <aside className="hidden overflow-hidden lg:block">
         <Hero />
       </aside>
       <section className="flex items-center justify-center px-6 py-10">
