@@ -1,6 +1,7 @@
 "use client";
 
 import { useCallback, useEffect, useMemo, useRef, useState } from "react";
+import { useRouter } from "next/navigation";
 import { cn } from "cn";
 import { api } from "@/lib/api";
 import { ai, type GapReport, type CaseSheetInput } from "@/lib/ai";
@@ -10,7 +11,6 @@ import {
   SECTION_ORDER,
   type CaseSection,
   type Consultation,
-  type Doctor,
   type Language,
   type Patient,
   type SectionKey,
@@ -23,7 +23,6 @@ import { VitalsForm, parseVitals, vitalsToText, type VitalsText } from "./vitals
 import { ContextPanel, type PanelTab } from "./context-panel";
 import { VoicePanel, type StructureOutcome } from "./voice-panel";
 import { GapsPanel } from "./gaps-panel";
-import { SignDialog } from "./sign-dialog";
 import { CompletenessRing } from "./status-badge";
 
 const AUTOSAVE_MS = 800;
@@ -32,17 +31,14 @@ const GAP_CHECK_MS = 1500;
 export function Workspace({
   consultation: initial,
   patient,
-  doctor,
   history,
-  onSigned,
 }: {
   consultation: Consultation;
   patient: Patient;
-  doctor: Doctor;
   history: Consultation[];
-  onSigned: () => void;
 }) {
   const id = initial.id;
+  const router = useRouter();
   const lastSigned = useMemo(() => history.find((c) => c.status === "signed" && c.id !== id), [history, id]);
 
   // ---- local editing state ----
@@ -53,7 +49,6 @@ export function Workspace({
   });
   const [vitalsText, setVitalsText] = useState<VitalsText>(() => vitalsToText(initial.vitals));
   const [activeKey, setActiveKey] = useState<SectionKey | "vitals">("chief_complaint");
-  const [signOpen, setSignOpen] = useState(false);
   const [tab, setTab] = useState<PanelTab>(initial.transcript ? "voice" : "context");
 
   // ---- voice / AI state ----
@@ -86,6 +81,7 @@ export function Workspace({
   // `flush` needn't reference itself or a later-declared function.
   const flushRef = useRef<(() => Promise<void>) | undefined>(undefined);
   const gapCheckRef = useRef<(() => Promise<void>) | undefined>(undefined);
+  const reviewRef = useRef<(() => void) | undefined>(undefined);
 
   const scheduleGapCheck = useCallback(() => {
     window.clearTimeout(gapTimer.current);
@@ -269,7 +265,7 @@ export function Workspace({
         void flushRef.current?.();
       } else if ((e.ctrlKey || e.metaKey) && e.key === "Enter") {
         e.preventDefault();
-        setSignOpen(true);
+        reviewRef.current?.();
       } else if (e.altKey && (e.key === "ArrowDown" || e.key === "ArrowUp")) {
         e.preventDefault();
         const areas = Array.from(document.querySelectorAll<HTMLTextAreaElement>("textarea[data-section-key]"));
@@ -333,16 +329,18 @@ export function Workspace({
   const missing = SECTION_ORDER.filter((k) => !sections[k].content.trim());
   const draftCount = SECTION_ORDER.filter((k) => sections[k].source === "ai_draft").length;
 
-  async function sign() {
+  // Review & sign lives on its own page: save everything, then go read the note.
+  async function goToReview() {
     await flush();
-    await api.signConsultation(id);
-    setSignOpen(false);
-    onSigned();
+    router.push(`/consult/${id}/review`);
   }
+  useEffect(() => {
+    reviewRef.current = () => void goToReview();
+  });
 
   return (
     <>
-      <PatientBar patient={patient} consultation={initial} completeness={completeness} saveState={saveState} lastSavedAt={lastSavedAt} onSign={() => setSignOpen(true)} />
+      <PatientBar patient={patient} consultation={initial} completeness={completeness} saveState={saveState} lastSavedAt={lastSavedAt} onSign={() => void goToReview()} />
 
       <div className="grid gap-5 lg:grid-cols-[188px_minmax(0,1fr)_320px]">
         {/* Left rail — section navigation with completeness ticks */}
@@ -409,8 +407,6 @@ export function Workspace({
           />
         </aside>
       </div>
-
-      <SignDialog open={signOpen} onOpenChange={setSignOpen} missing={missing} doctorLine={`${doctor.fullName}, ${doctor.qualification} · Reg. ${doctor.regNumber}`} onConfirm={sign} />
     </>
   );
 }

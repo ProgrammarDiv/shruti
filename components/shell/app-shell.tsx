@@ -18,7 +18,7 @@ export function AppShell({ children }: { children: React.ReactNode }) {
 
   return (
     <div className="flex min-h-screen">
-      <aside className="sticky top-0 flex h-screen w-[232px] shrink-0 flex-col border-r border-sidebar-border bg-sidebar">
+      <aside className="sticky top-0 flex h-screen w-[232px] shrink-0 flex-col border-r border-sidebar-border bg-sidebar print:hidden">
         <div className="flex items-center gap-2.5 px-5 pt-5 pb-4">
           <span className="grid size-8 place-items-center rounded-lg bg-primary text-primary-foreground">
             <Mic className="size-4" />
@@ -63,7 +63,7 @@ export function AppShell({ children }: { children: React.ReactNode }) {
 
       <main className="min-w-0 flex-1">
         {/* The consultation workspace uses the full width; every other page reads better measured. */}
-        <div className={cn("mx-auto w-full", pathname.startsWith("/consult/") ? "max-w-none px-6 py-5" : "max-w-[1180px] px-8 py-7")}>{children}</div>
+        <div className={cn("mx-auto w-full print:max-w-none print:p-0", pathname.startsWith("/consult/") ? "max-w-none px-6 py-5" : "max-w-[1180px] px-8 py-7")}>{children}</div>
       </main>
     </div>
   );

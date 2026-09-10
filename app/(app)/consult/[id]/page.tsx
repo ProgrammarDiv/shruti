@@ -12,7 +12,7 @@ import { Skeleton } from "@/components/ui/skeleton";
 // Draft → the editable workspace. Signed → the locked note.
 export default function ConsultationPage({ params }: PageProps<"/consult/[id]">) {
   const { id } = use(params);
-  const { data, loading, reload } = useAsync(
+  const { data, loading } = useAsync(
     async () => {
       const consultation = await api.getConsultation(id);
       if (!consultation) return null;
@@ -48,13 +48,13 @@ export default function ConsultationPage({ params }: PageProps<"/consult/[id]">)
   const { consultation, patient, doctor, history } = data;
 
   if (consultation.status === "draft") {
-    return <Workspace key={consultation.id} consultation={consultation} patient={patient} doctor={doctor} history={history} onSigned={reload} />;
+    return <Workspace key={consultation.id} consultation={consultation} patient={patient} history={history} />;
   }
 
   return (
     <>
       <PatientBar patient={patient} consultation={consultation} completeness={consultation.completenessScore} saveState="idle" />
-      <ConsultationReadView consultation={consultation} doctor={doctor} />
+      <ConsultationReadView consultation={consultation} patient={patient} doctor={doctor} />
     </>
   );
 }

@@ -28,7 +28,7 @@ export function PatientBar({
   onSign?: () => void;
 }) {
   return (
-    <div className="sticky top-0 z-20 -mx-6 -mt-5 mb-5 border-b bg-background/95 px-6 pt-3 pb-3 backdrop-blur">
+    <div className="sticky top-0 z-20 -mx-6 -mt-5 mb-5 border-b bg-background/95 px-6 pt-3 pb-3 backdrop-blur print:hidden">
       <div className="flex flex-wrap items-center gap-3">
         <Button variant="ghost" size="icon-sm" className="text-muted-foreground" render={<Link href={`/patients/${patient.id}`} />} aria-label="Back to patient">
           <ArrowLeft />
