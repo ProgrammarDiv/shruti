@@ -71,6 +71,22 @@ proxy.ts                auth gate (only active when Supabase is configured)
 - **The AI checks the record, not the patient.** Gap observations are about documentation; the prompts and the mock rules never emit a diagnosis, a test or a treatment.
 - **A signed note is immutable** — enforced by a Postgres trigger, with the UI reflecting it.
 
+## Deploy
+
+The app needs a Node server (route handlers, the auth proxy), so it can't be a static GitHub Pages site. Vercel is the zero-config host for Next.js:
+
+1. Push this folder to a GitHub repository.
+2. At vercel.com → **Add New → Project** → import the repository. Framework is detected as Next.js; leave the defaults.
+3. **Environment Variables** — add the same keys as `.env.local`:
+   `NEXT_PUBLIC_SUPABASE_URL`, `NEXT_PUBLIC_SUPABASE_PUBLISHABLE_KEY`, `GEMINI_API_KEY` (or `ANTHROPIC_API_KEY`), `NEXT_PUBLIC_AI_MODE=live`.
+4. **Deploy.** You get an `https://….vercel.app` URL; every push to `main` redeploys.
+
+Voice capture needs a secure origin, so the microphone only works over HTTPS (the Vercel URL) or on `localhost` — not over a plain `http://192.168…` address.
+
+## Test on a phone right now
+
+With `npm run dev` running, other devices on the same Wi-Fi can open `http://<your-PC-IP>:3000` (the dev server prints it as "Network"). If it doesn't load, Windows Firewall is blocking port 3000 — allow Node.js through when prompted. Everything works there except recording; use the **Sample** button instead.
+
 ## Scripts
 
 ```bash
