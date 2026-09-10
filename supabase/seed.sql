@@ -16,10 +16,15 @@ declare
   p7 uuid := '00000000-0000-0000-0000-000000000007';
   p8 uuid := '00000000-0000-0000-0000-000000000008';
   c uuid;
+  v_email text := 'doctor@shruti.demo';   -- ← change to the email you created, if different
 begin
-  select id into v_user from auth.users where email = 'doctor@shruti.demo';
+  select id into v_user from auth.users where email = v_email;
+  -- Fresh project with exactly one user? Use that one, whatever its email.
+  if v_user is null and (select count(*) from auth.users) = 1 then
+    select id, email into v_user, v_email from auth.users limit 1;
+  end if;
   if v_user is null then
-    raise exception 'Create the auth user doctor@shruti.demo first (Authentication → Users → Add user), then re-run.';
+    raise exception 'No auth user found for %. Create it under Authentication → Users → Add user, or set v_email at the top of this file.', v_email;
   end if;
 
   -- wipe

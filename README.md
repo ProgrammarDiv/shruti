@@ -31,14 +31,19 @@ Copy `.env.example` to `.env.local` and fill in what you have. Each part is inde
 
 Data now lives in Postgres with row-level security scoping every row to the doctor's clinic; signed notes are made immutable by a database trigger, not just by the UI.
 
-### Claude — live AI
+### Live AI — Claude or Gemini
+
+Either key works; the route handlers sit behind one provider interface.
 
 ```
-ANTHROPIC_API_KEY=sk-ant-…
+ANTHROPIC_API_KEY=sk-ant-…        # console.anthropic.com
+# or
+GEMINI_API_KEY=AIza…              # aistudio.google.com → Get API key (free tier)
+
 NEXT_PUBLIC_AI_MODE=live
 ```
 
-Restart. Structuring, the gap check and the summary now call Claude through `/api/ai/*` — the key never reaches the browser. Every call is logged to `ai_outputs` when Supabase is on. If a call fails, times out or is refused, the rule-based mock answers instead and the result's model label says so. That fallback is the demo-day safety net, and it is exercised constantly because it's the same code path as mock mode.
+Restart. Structuring, the gap check and the summary now call the model through `/api/ai/*` — the key never reaches the browser. Claude is preferred when both keys are set; `AI_PROVIDER=gemini` forces Gemini, `AI_MODEL=…` overrides the model. Every call is logged to `ai_outputs` when Supabase is on. If a call fails, times out or is refused, the rule-based mock answers instead and the result's model label says so. That fallback is the demo-day safety net, and it is exercised constantly because it's the same code path as mock mode.
 
 ## Where things are
 

@@ -163,6 +163,14 @@ drop trigger if exists vitals_locked on vitals;
 create trigger vitals_locked before insert or update or delete on vitals
   for each row execute function block_locked_child();
 
+-- ===== Privileges =====
+-- Signed-in users may touch the tables (RLS below decides which rows).
+-- The anonymous role gets nothing.
+grant usage on schema public to authenticated;
+grant select, insert, update, delete on all tables in schema public to authenticated;
+grant execute on function auth_clinic_id() to authenticated;
+revoke all on all tables in schema public from anon;
+
 -- ===== Row-level security: a clinic sees only its own rows =====
 alter table clinics       enable row level security;
 alter table profiles      enable row level security;

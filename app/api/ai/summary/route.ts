@@ -1,6 +1,6 @@
 import { SUMMARY_SYSTEM } from "@/lib/ai/prompts";
 import { SummaryRequest } from "@/lib/ai/schemas";
-import { AiRefused, MODEL, anthropic, errorResponse, logAiOutput } from "@/lib/ai/server";
+import { errorResponse, logAiOutput, provider } from "@/lib/ai/server";
 
 // Streams plain text so the review page can show the summary appearing.
 export async function POST(request: Request) {
@@ -35,37 +35,19 @@ export async function POST(request: Request) {
       `Assessment & plan: ${input.sections.plan || "(empty)"}`,
     ].join("\n");
 
-    const stream = anthropic().messages.stream({
-      model: MODEL,
-      max_tokens: 4000,
-      system: [{ type: "text", text: SUMMARY_SYSTEM, cache_control: { type: "ephemeral" } }],
-      messages: [{ role: "user", content: user }],
-      output_config: { effort: "medium" },
-    });
-
+    const llm = provider();
     const encoder = new TextEncoder();
-    let full = "";
     const body = new ReadableStream<Uint8Array>({
       async start(controller) {
         try {
-          for await (const event of stream) {
-            if (event.type === "content_block_delta" && event.delta.type === "text_delta") {
-              full += event.delta.text;
-              controller.enqueue(encoder.encode(event.delta.text));
-            }
-          }
-          const final = await stream.finalMessage();
-          if (final.stop_reason === "refusal") throw new AiRefused(final.stop_details?.category ?? null);
-          void logAiOutput({
-            consultationId: input.consultationId,
-            kind: "summary",
-            model: final.model,
-            inputChars: user.length,
-            output: { text: full },
-            latencyMs: Date.now() - started,
-            inputTokens: final.usage.input_tokens,
-            outputTokens: final.usage.output_tokens,
+          const result = await llm.streamText({
+            system: SUMMARY_SYSTEM,
+            user,
+            effort: "medium",
+            maxTokens: 4000,
+            onText: (chunk) => controller.enqueue(encoder.encode(chunk)),
           });
+          void logAiOutput({ consultationId: input.consultationId, kind: "summary", model: result.model, inputChars: user.length, output: { text: result.text }, latencyMs: Date.now() - started, inputTokens: result.inputTokens, outputTokens: result.outputTokens });
           controller.close();
         } catch (err) {
           controller.error(err);

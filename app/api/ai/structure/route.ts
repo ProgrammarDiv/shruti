@@ -1,7 +1,6 @@
-import { zodOutputFormat } from "@anthropic-ai/sdk/helpers/zod";
 import { STRUCTURE_SYSTEM } from "@/lib/ai/prompts";
 import { StructureOutput, StructureRequest } from "@/lib/ai/schemas";
-import { AiRefused, MODEL, anthropic, errorResponse, logAiOutput, quoteIsInTranscript } from "@/lib/ai/server";
+import { errorResponse, logAiOutput, provider, quoteIsInTranscript } from "@/lib/ai/server";
 import { SECTION_LABELS, SECTION_ORDER } from "@/lib/types";
 import type { StructuredCase } from "@/lib/ai/types";
 
@@ -10,22 +9,13 @@ export async function POST(request: Request) {
   try {
     const input = StructureRequest.parse(await request.json());
 
-    const response = await anthropic().messages.parse({
-      model: MODEL,
-      max_tokens: 8000,
-      system: [{ type: "text", text: STRUCTURE_SYSTEM, cache_control: { type: "ephemeral" } }],
-      messages: [
-        {
-          role: "user",
-          content: `Patient: ${input.patient.ageYears}-year-old ${input.patient.gender}\nKnown allergies on file: ${input.patient.allergies.join(", ") || "none"}\nExpected language: ${input.language}\nConsultation transcript:\n"""\n${input.transcript}\n"""`,
-        },
-      ],
-      output_config: { format: zodOutputFormat(StructureOutput), effort: "medium" },
+    const { data: out, model, inputTokens, outputTokens } = await provider().generateJson({
+      system: STRUCTURE_SYSTEM,
+      user: `Patient: ${input.patient.ageYears}-year-old ${input.patient.gender}\nKnown allergies on file: ${input.patient.allergies.join(", ") || "none"}\nExpected language: ${input.language}\nConsultation transcript:\n"""\n${input.transcript}\n"""`,
+      schema: StructureOutput,
+      effort: "medium",
+      maxTokens: 8000,
     });
-
-    if (response.stop_reason === "refusal") throw new AiRefused(response.stop_details?.category ?? null);
-    const out = response.parsed_output;
-    if (!out) throw new Error("The model returned no parseable output");
 
     // Enforce the quote rule in code. Dropped sections are reported, not hidden.
     const sections: StructuredCase["sections"] = {};
@@ -40,24 +30,9 @@ export async function POST(request: Request) {
       sections[key] = { text: s.text.trim(), sourceQuote: s.source_quote, confidence: s.confidence };
     }
 
-    const result: StructuredCase = {
-      sections,
-      unclear,
-      detectedLanguage: out.detected_language,
-      model: response.model,
-      latencyMs: Date.now() - started,
-    };
+    const result: StructuredCase = { sections, unclear, detectedLanguage: out.detected_language, model, latencyMs: Date.now() - started };
 
-    void logAiOutput({
-      consultationId: input.consultationId,
-      kind: "structure",
-      model: response.model,
-      inputChars: input.transcript.length,
-      output: result,
-      latencyMs: result.latencyMs,
-      inputTokens: response.usage.input_tokens,
-      outputTokens: response.usage.output_tokens,
-    });
+    void logAiOutput({ consultationId: input.consultationId, kind: "structure", model, inputChars: input.transcript.length, output: result, latencyMs: result.latencyMs, inputTokens, outputTokens });
 
     return Response.json(result);
   } catch (err) {

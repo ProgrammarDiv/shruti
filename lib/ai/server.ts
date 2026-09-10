@@ -1,42 +1,40 @@
 // Server-side helpers for the /api/ai/* route handlers. Never import this
-// from a client component — it holds the Anthropic client and the API key.
+// from a client component — it selects the provider that holds the API key.
 
-import Anthropic from "@anthropic-ai/sdk";
 import { hasSupabase } from "@/lib/env";
 import { supabaseServer } from "@/lib/supabase/server";
+import { anthropicProvider } from "./providers/anthropic";
+import { geminiProvider } from "./providers/gemini";
+import { AiRefused, AiUnavailable, ProviderError, type LlmProvider } from "./providers/types";
 
-export const MODEL = process.env.AI_MODEL || "claude-opus-5";
+export { AiRefused, AiUnavailable, ProviderError };
 
-let client: Anthropic | null = null;
-export function anthropic(): Anthropic {
-  if (!process.env.ANTHROPIC_API_KEY) throw new AiUnavailable("ANTHROPIC_API_KEY is not set");
-  // Timeout is in milliseconds for the TypeScript SDK. A consultation-time
-  // call that takes longer than this is worse than a fallback.
-  if (!client) client = new Anthropic({ timeout: 45_000, maxRetries: 1 });
-  return client;
-}
+const DEFAULT_MODEL = { anthropic: "claude-opus-5", gemini: "gemini-2.5-flash" } as const;
 
-export class AiUnavailable extends Error {}
-export class AiRefused extends Error {
-  constructor(public category: string | null) {
-    super("The model declined this request");
-  }
+// AI_PROVIDER picks explicitly; otherwise whichever key is present wins,
+// Claude first. AI_MODEL overrides the provider's default model.
+export function provider(): LlmProvider {
+  const wanted = process.env.AI_PROVIDER as "anthropic" | "gemini" | undefined;
+  const hasClaude = !!process.env.ANTHROPIC_API_KEY;
+  const hasGemini = !!process.env.GEMINI_API_KEY;
+  const name = wanted ?? (hasClaude ? "anthropic" : hasGemini ? "gemini" : undefined);
+  if (!name) throw new AiUnavailable("No AI key is set (ANTHROPIC_API_KEY or GEMINI_API_KEY)");
+  if (name === "anthropic" && !hasClaude) throw new AiUnavailable("AI_PROVIDER=anthropic but ANTHROPIC_API_KEY is not set");
+  if (name === "gemini" && !hasGemini) throw new AiUnavailable("AI_PROVIDER=gemini but GEMINI_API_KEY is not set");
+  const model = process.env.AI_MODEL || DEFAULT_MODEL[name];
+  return name === "anthropic" ? anthropicProvider(model) : geminiProvider(model);
 }
 
 export function jsonError(status: number, code: string, message: string) {
   return Response.json({ error: { code, message } }, { status });
 }
 
-// Maps SDK/validation failures to a response the browser client can act on.
-// Anything here makes the client fall back to the mock, so the exact status
-// matters less than being explicit about why.
+// Anything here makes the browser client fall back to the mock, so the
+// exact status matters less than being explicit about why.
 export function errorResponse(err: unknown) {
   if (err instanceof AiUnavailable) return jsonError(503, "unavailable", err.message);
   if (err instanceof AiRefused) return jsonError(502, "refusal", `Declined (${err.category ?? "unspecified"})`);
-  if (err instanceof Anthropic.AuthenticationError) return jsonError(503, "auth", "Anthropic API key was rejected");
-  if (err instanceof Anthropic.RateLimitError) return jsonError(429, "rate_limited", "Rate limited by the model provider");
-  if (err instanceof Anthropic.APIConnectionTimeoutError) return jsonError(504, "timeout", "The model took too long");
-  if (err instanceof Anthropic.APIError) return jsonError(502, "provider", `${err.status ?? ""} ${err.message}`.trim());
+  if (err instanceof ProviderError) return jsonError(err.status, err.status === 429 ? "rate_limited" : err.status === 504 ? "timeout" : err.status === 503 ? "auth" : "provider", err.message);
   if (err instanceof Error && err.name === "ZodError") return jsonError(400, "bad_request", err.message);
   return jsonError(500, "unknown", err instanceof Error ? err.message : "Unknown error");
 }
