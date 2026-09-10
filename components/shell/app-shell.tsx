@@ -62,7 +62,8 @@ export function AppShell({ children }: { children: React.ReactNode }) {
       </aside>
 
       <main className="min-w-0 flex-1">
-        <div className="mx-auto w-full max-w-[1180px] px-8 py-7">{children}</div>
+        {/* The consultation workspace uses the full width; every other page reads better measured. */}
+        <div className={cn("mx-auto w-full", pathname.startsWith("/consult/") ? "max-w-none px-6 py-5" : "max-w-[1180px] px-8 py-7")}>{children}</div>
       </main>
     </div>
   );

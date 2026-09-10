@@ -85,10 +85,11 @@ export interface CaseSection {
   source: SectionSource;
   aiConfidence?: number;
   sourceQuote?: string;
+  carriedFrom?: string; // consultation id this text was copied from, until the doctor edits it
   updatedAt: string;
 }
 
-export type SectionPatch = Partial<Pick<CaseSection, "content" | "source" | "aiConfidence" | "sourceQuote">>;
+export type SectionPatch = Partial<Pick<CaseSection, "content" | "source" | "aiConfidence" | "sourceQuote" | "carriedFrom">>;
 
 export interface Vitals {
   bpSystolic?: number;

@@ -143,6 +143,19 @@ export const mockClient: DataClient = {
     if (!patient) throw new Error("Patient not found");
     const prior = db.consultations.filter((c) => c.patientId === patientId);
     const now = new Date().toISOString();
+    const sections = emptySections(now);
+
+    // Carry-forward: history that rarely changes between visits comes across
+    // from the last signed note, marked so the doctor confirms rather than retypes.
+    const lastSigned = prior.filter((c) => c.status === "signed").sort((a, b) => b.startedAt.localeCompare(a.startedAt))[0];
+    if (lastSigned) {
+      for (const key of ["past_history", "medications"] as const) {
+        const src = lastSigned.sections.find((s) => s.key === key);
+        const dst = sections.find((s) => s.key === key);
+        if (src?.content && dst) Object.assign(dst, { content: src.content, source: "doctor", carriedFrom: lastSigned.id });
+      }
+    }
+
     const c: Consultation = {
       id: newId("con"),
       patientId,
@@ -153,8 +166,9 @@ export const mockClient: DataClient = {
       completenessScore: 0,
       startedAt: now,
       isLocked: false,
-      sections: emptySections(now),
+      sections,
     };
+    c.completenessScore = localCompleteness(c);
     db.consultations.push(c);
     persist();
     return delay(clone(c));

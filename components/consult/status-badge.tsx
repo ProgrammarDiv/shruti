@@ -26,8 +26,8 @@ const PROV: Record<SectionSource, { label: string; cls: string }> = {
 };
 
 // The provenance badge. Always visible, never on hover — it is the feature.
-export function ProvenanceBadge({ source, className }: { source: SectionSource; className?: string }) {
-  const p = PROV[source];
+export function ProvenanceBadge({ source, carried, className }: { source: SectionSource; carried?: boolean; className?: string }) {
+  const p = carried ? { label: "From last visit", cls: "border-prov-edited/30 bg-prov-edited-soft text-prov-edited" } : PROV[source];
   return (
     <span className={cn("inline-flex h-5 items-center rounded-full border px-2 font-mono text-[10px] font-medium uppercase tracking-[0.1em]", p.cls, className)}>
       {p.label}
