@@ -203,6 +203,13 @@ export const mockClient: DataClient = {
     return delay(undefined);
   },
 
+  async setLanguage(consultationId, language) {
+    const db = load();
+    requireEditable(db, consultationId).languageUsed = language;
+    persist();
+    return delay(undefined);
+  },
+
   async setSummary(consultationId, summary) {
     const db = load();
     requireEditable(db, consultationId).summary = summary;

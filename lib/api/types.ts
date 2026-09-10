@@ -2,6 +2,7 @@ import type {
   Consultation,
   DashboardData,
   Doctor,
+  Language,
   NewPatient,
   Patient,
   PatientListItem,
@@ -31,6 +32,7 @@ export interface DataClient {
   saveSection(consultationId: string, key: SectionKey, patch: SectionPatch): Promise<Consultation>;
   saveVitals(consultationId: string, vitals: VitalsInput): Promise<Vitals>;
   setTranscript(consultationId: string, transcript: string): Promise<void>;
+  setLanguage(consultationId: string, language: Language): Promise<void>;
   setSummary(consultationId: string, summary: string): Promise<void>;
   setCompleteness(consultationId: string, score: number): Promise<void>;
   signConsultation(consultationId: string): Promise<Consultation>;
