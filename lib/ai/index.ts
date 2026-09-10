@@ -1,15 +1,13 @@
 // The only AI module components may import.
 //
-// Today `ai` is the rule-based mock. When the Claude-backed route handlers
-// land, this becomes:
-//
-//   export const ai: AiClient = process.env.NEXT_PUBLIC_AI_MODE === "mock" ? mockAi : liveAi;
-//
-// with `liveAi` calling /api/ai/* (the key never reaches the browser). The mock
-// stays as the DEMO_MODE fallback — the same UI path, cached responses.
+// NEXT_PUBLIC_AI_MODE=live → Claude via /api/ai/* (the key stays on the
+// server), with the rule-based mock as the automatic fallback.
+// Anything else → the mock alone. Same interface, same UI path.
 
 import type { AiClient } from "./types";
+import { aiMode } from "@/lib/env";
 import { mockAi } from "./mock/client";
+import { liveAi } from "./live/client";
 
 export type * from "./types";
-export const ai: AiClient = mockAi;
+export const ai: AiClient = aiMode === "live" ? liveAi : mockAi;

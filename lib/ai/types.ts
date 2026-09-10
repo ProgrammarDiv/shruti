@@ -12,6 +12,7 @@ export interface StructureInput {
   transcript: string;
   language: Language;
   patient: { ageYears: number; gender: Gender; allergies: string[] };
+  consultationId?: string; // for the ai_outputs audit log
 }
 
 export interface StructuredCase {
@@ -37,6 +38,7 @@ export interface CaseSheetInput {
   patient: { ageYears: number; gender: Gender; allergies: string[] };
   sections: Record<SectionKey, string>;
   vitals?: VitalsInput & { bmi?: number };
+  consultationId?: string; // for the ai_outputs audit log
 }
 
 export interface GapReport {

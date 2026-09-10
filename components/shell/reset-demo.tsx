@@ -4,6 +4,7 @@ import { useState } from "react";
 import { useRouter } from "next/navigation";
 import { RotateCcw } from "lucide-react";
 import { api } from "@/lib/api";
+import { hasSupabase } from "@/lib/env";
 import { Button } from "@/components/ui/button";
 import {
   Dialog,
@@ -19,6 +20,9 @@ export function ResetDemoButton() {
   const [open, setOpen] = useState(false);
   const [busy, setBusy] = useState(false);
   const router = useRouter();
+
+  // Real data is never reset from the UI; re-run supabase/seed.sql instead.
+  if (hasSupabase) return null;
 
   async function reset() {
     setBusy(true);

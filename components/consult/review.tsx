@@ -41,6 +41,7 @@ export function Review({ consultation: c, patient, doctor }: { consultation: Con
           patient: { ageYears: patient.ageYears, gender: patient.gender, allergies: patient.allergies },
           sections,
           vitals: c.vitals ? { ...c.vitals } : undefined,
+          consultationId: c.id,
         });
         if (!cancelled) setGaps(report);
       } finally {
@@ -67,6 +68,7 @@ export function Review({ consultation: c, patient, doctor }: { consultation: Con
           patientName: patient.fullName,
           date: formatDate(c.startedAt),
           doctorLine: `${doctor.fullName}, ${doctor.qualification}`,
+          consultationId: c.id,
         },
         (chunk) => {
           setSummary((s) => s + chunk);

@@ -161,7 +161,7 @@ export function Workspace({
     setStructuring(true);
     try {
       await api.setTranscript(id, transcript);
-      const result = await ai.structure({ transcript, language, patient: { ageYears: patient.ageYears, gender: patient.gender, allergies: patient.allergies } });
+      const result = await ai.structure({ transcript, language, patient: { ageYears: patient.ageYears, gender: patient.gender, allergies: patient.allergies }, consultationId: id });
       const applied: SectionKey[] = [];
       const skipped: SectionKey[] = [];
       for (const key of SECTION_ORDER) {
@@ -237,6 +237,7 @@ export function Workspace({
         patient: { ageYears: patient.ageYears, gender: patient.gender, allergies: patient.allergies },
         sections: Object.fromEntries(SECTION_ORDER.map((k) => [k, secs[k].content])) as Record<SectionKey, string>,
         vitals: Object.keys(input).length ? { ...input, bmi: computeBmi(input.heightCm, input.weightKg) } : undefined,
+        consultationId: id,
       };
       const report = await ai.detectGaps(sheet);
       setGapReport(report);
