@@ -10,7 +10,7 @@ const BARS = [14, 26, 38, 22, 44, 30, 18, 36, 26, 40, 20, 32, 16, 28, 38, 22, 12
 
 export function Hero() {
   return (
-    <div className="relative flex h-full flex-col justify-between overflow-hidden p-10 text-white xl:p-14">
+    <div className="relative isolate flex h-full flex-col justify-between overflow-hidden p-10 text-white xl:p-14">
       {/* Backdrop: petrol gradient with a faint chart-paper grid */}
       <div className="absolute inset-0 -z-10 bg-[linear-gradient(160deg,#0f3646_0%,#1b5b75_55%,#12475c_100%)]" />
       <div className="absolute inset-0 -z-10 opacity-[0.07] [background-image:linear-gradient(#fff_1px,transparent_1px),linear-gradient(90deg,#fff_1px,transparent_1px)] [background-size:28px_28px]" />

@@ -72,7 +72,10 @@ export function geminiProvider(model: string): LlmProvider {
     name: "gemini",
     model,
 
-    async generateJson({ system, user, schema, maxTokens }) {
+    async generateJson({ system, user, schema, effort, maxTokens }) {
+      // Gemini 3.x accepts thinkingLevel (not the older thinkingBudget). "low"
+      // takes the after-every-save gap check from ~6 s to under 2 s.
+      const thinkingConfig = effort === "low" ? { thinkingLevel: "low" } : undefined;
       const instruction = `${system}\n\nRespond with a single JSON object and nothing else. It must match this JSON Schema exactly (use null for a nullable field you cannot fill):\n${describeSchema(schema)}`;
       let userText = user;
       let lastError = "";
@@ -85,7 +88,7 @@ export function geminiProvider(model: string): LlmProvider {
             {
               systemInstruction: { parts: [{ text: instruction }] },
               contents: [{ role: "user", parts: [{ text: userText }] }],
-              generationConfig: { responseMimeType: "application/json", temperature: 0.2, maxOutputTokens: maxTokens },
+              generationConfig: { responseMimeType: "application/json", temperature: 0.2, maxOutputTokens: maxTokens, ...(thinkingConfig ? { thinkingConfig } : {}) },
             },
             t.signal,
           );

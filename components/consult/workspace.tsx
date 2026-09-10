@@ -26,7 +26,8 @@ import { GapsPanel } from "./gaps-panel";
 import { CompletenessRing } from "./status-badge";
 
 const AUTOSAVE_MS = 800;
-const GAP_CHECK_MS = 1500;
+// Long enough that a doctor pausing mid-sentence doesn't fire a model call.
+const GAP_CHECK_MS = 3000;
 
 export function Workspace({
   consultation: initial,
