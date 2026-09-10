@@ -1,7 +1,7 @@
 "use client";
 
 import Link from "next/link";
-import { ArrowRight, Stethoscope } from "lucide-react";
+import { ArrowRight, Stethoscope, Users, CalendarDays, PenLine, Gauge } from "lucide-react";
 import { api } from "@/lib/api";
 import { useAsync } from "@/lib/use-async";
 import { ageSex, formatTime, relativeDay } from "@/lib/format";
@@ -13,20 +13,29 @@ import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle, CardAction } from "@/components/ui/card";
 import { Skeleton } from "@/components/ui/skeleton";
 
+function greeting() {
+  const h = new Date().getHours();
+  return h < 12 ? "Good morning" : h < 17 ? "Good afternoon" : "Good evening";
+}
+
 export default function DashboardPage() {
-  const { data, loading, error } = useAsync(() => api.getDashboard(), []);
+  const { data, loading, error } = useAsync(async () => {
+    const [dash, doctor] = await Promise.all([api.getDashboard(), api.getCurrentDoctor()]);
+    return { ...dash, doctor };
+  }, []);
 
   const today = new Intl.DateTimeFormat("en-IN", { weekday: "long", day: "numeric", month: "long" }).format(new Date());
+  const shortName = data?.doctor.fullName.replace(/^Dr\.?\s*/i, "").split(" ").pop();
 
   return (
     <>
-      <PageHeader eyebrow={today} title="Good morning, Dr. Rao" description="What needs you today." />
+      <PageHeader eyebrow={today} title={`${greeting()}${shortName ? `, Dr. ${shortName}` : ""}`} description="What needs you today." />
 
       <div className="mb-6 grid grid-cols-2 gap-3 lg:grid-cols-4">
-        <Stat label="Patients today" value={data?.stats.patientsToday} loading={loading} />
-        <Stat label="Consultations this week" value={data?.stats.consultationsThisWeek} loading={loading} />
-        <Stat label="Drafts pending" value={data?.stats.draftsPending} loading={loading} tone={data && data.stats.draftsPending > 0 ? "warn" : undefined} />
-        <Stat label="Avg. completeness" value={data ? `${data.stats.avgCompleteness}%` : undefined} loading={loading} />
+        <Stat icon={<Users />} label="Patients today" value={data?.stats.patientsToday} loading={loading} />
+        <Stat icon={<CalendarDays />} label="Consultations this week" value={data?.stats.consultationsThisWeek} loading={loading} />
+        <Stat icon={<PenLine />} label="Drafts pending" value={data?.stats.draftsPending} loading={loading} tone={data && data.stats.draftsPending > 0 ? "warn" : undefined} />
+        <Stat icon={<Gauge />} label="Avg. completeness" value={data ? `${data.stats.avgCompleteness}%` : undefined} loading={loading} />
       </div>
 
       {error && <p className="mb-4 text-sm text-flag">{error}</p>}
@@ -103,16 +112,19 @@ export default function DashboardPage() {
   );
 }
 
-function Stat({ label, value, loading, tone }: { label: string; value?: number | string; loading: boolean; tone?: "warn" }) {
+function Stat({ icon, label, value, loading, tone }: { icon: React.ReactNode; label: string; value?: number | string; loading: boolean; tone?: "warn" }) {
   return (
     <Card size="sm">
-      <CardContent>
-        <div className="font-mono text-[10px] uppercase tracking-[0.12em] text-muted-foreground">{label}</div>
-        {loading ? (
-          <Skeleton className="mt-2 h-7 w-12" />
-        ) : (
-          <div className={`mt-1 text-2xl font-semibold tracking-tight tnum ${tone === "warn" ? "text-warn" : ""}`}>{value ?? "—"}</div>
-        )}
+      <CardContent className="flex items-start gap-3">
+        <span className={`grid size-9 shrink-0 place-items-center rounded-lg [&>svg]:size-4 ${tone === "warn" ? "bg-warn-soft text-warn" : "bg-accent text-accent-foreground"}`}>{icon}</span>
+        <div className="min-w-0">
+          <div className="font-mono text-[10px] uppercase tracking-[0.12em] text-muted-foreground">{label}</div>
+          {loading ? (
+            <Skeleton className="mt-1.5 h-7 w-12" />
+          ) : (
+            <div className={`mt-0.5 text-2xl font-semibold tracking-tight tnum ${tone === "warn" ? "text-warn" : ""}`}>{value ?? "—"}</div>
+          )}
+        </div>
       </CardContent>
     </Card>
   );
