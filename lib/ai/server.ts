@@ -9,7 +9,8 @@ import { AiRefused, AiUnavailable, ProviderError, type LlmProvider } from "./pro
 
 export { AiRefused, AiUnavailable, ProviderError };
 
-const DEFAULT_MODEL = { anthropic: "claude-opus-5", gemini: "gemini-2.5-flash" } as const;
+// gemini-2.5-flash is retired for new accounts; 3.6-flash is Google's stated replacement.
+const DEFAULT_MODEL = { anthropic: "claude-opus-5", gemini: "gemini-3.6-flash" } as const;
 
 // AI_PROVIDER picks explicitly; otherwise whichever key is present wins,
 // Claude first. AI_MODEL overrides the provider's default model.
