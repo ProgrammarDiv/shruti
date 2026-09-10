@@ -2,13 +2,13 @@
 
 import { useEffect, useState } from "react";
 import Link from "next/link";
+import Image from "next/image";
 import { useRouter } from "next/navigation";
 import { Search, UserPlus, Stethoscope } from "lucide-react";
 import { api } from "@/lib/api";
 import { useAsync } from "@/lib/use-async";
 import { ageSex, relativeDay } from "@/lib/format";
 import { LANGUAGE_LABELS } from "@/lib/types";
-import { PageHeader } from "@/components/shell/page-header";
 import { EmptyQueue } from "@/components/brand/illustrations";
 import { PatientAvatar } from "@/components/patients/patient-avatar";
 import { Button } from "@/components/ui/button";
@@ -47,16 +47,21 @@ export default function PatientsPage() {
 
   return (
     <>
-      <PageHeader
-        title="Patients"
-        description="Search by name, patient ID or phone number."
-        actions={
-          <Button render={<Link href="/patients/new" />}>
+      <div className="relative mb-6 overflow-hidden rounded-xl ring-1 ring-foreground/10">
+        <Image src="/photos/office-consult.jpg" alt="" fill sizes="1100px" className="object-cover object-[50%_40%]" />
+        <div className="absolute inset-0 bg-[linear-gradient(90deg,rgba(15,54,70,0.92)_0%,rgba(15,54,70,0.75)_45%,rgba(15,54,70,0.25)_100%)]" />
+        <div className="relative flex flex-wrap items-end justify-between gap-4 p-6 text-white">
+          <div>
+            <div className="font-mono text-[11px] uppercase tracking-[0.12em] text-white/60">Registry</div>
+            <h1 className="text-[30px] leading-tight text-white">Patients</h1>
+            <p className="mt-1 text-sm text-white/75">Search by name, patient ID or phone number.</p>
+          </div>
+          <Button variant="secondary" render={<Link href="/patients/new" />}>
             <UserPlus data-icon="inline-start" />
             New patient
           </Button>
-        }
-      />
+        </div>
+      </div>
 
       <div className="relative mb-4 max-w-md">
         <Search className="pointer-events-none absolute top-1/2 left-3 size-4 -translate-y-1/2 text-muted-foreground" />

@@ -21,7 +21,7 @@ export function Wordmark({ className, light }: { className?: string; light?: boo
     <div className={cn("flex items-center gap-2.5", className)}>
       <LogoMark />
       <div className="leading-tight">
-        <div className={cn("text-[17px] font-semibold tracking-tight", light && "text-white")}>Shruti</div>
+        <div className={cn("font-heading text-[20px] font-medium leading-none tracking-tight", light && "text-white")}>Shruti</div>
         <div className={cn("font-mono text-[10px] uppercase tracking-[0.14em]", light ? "text-white/60" : "text-muted-foreground")}>Clinical scribe</div>
       </div>
     </div>

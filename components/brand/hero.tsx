@@ -1,37 +1,44 @@
+import Image from "next/image";
 import { Check, Mic, Radar, ShieldCheck } from "lucide-react";
-import { ConsultScene } from "./illustrations";
 
-// The login-page panel: the consultation scene, the case sheet it produces,
-// and the three things that make the product different. Static.
+// The login-page panel: a real consultation behind a petrol wash, the case
+// sheet Shruti produces from it, and the three things that make the product
+// different. Static.
 
 export function Hero() {
   return (
     <div className="relative isolate flex min-h-full flex-col justify-between gap-6 p-10 text-white xl:p-12">
-      {/* Backdrop: petrol gradient with a faint chart-paper grid */}
-      <div className="absolute inset-0 -z-10 bg-[linear-gradient(160deg,#0f3646_0%,#1b5b75_55%,#12475c_100%)]" />
-      <div className="absolute inset-0 -z-10 opacity-[0.07] [background-image:linear-gradient(#fff_1px,transparent_1px),linear-gradient(90deg,#fff_1px,transparent_1px)] [background-size:28px_28px]" />
-      <div className="absolute -top-32 -right-32 -z-10 size-[420px] rounded-full bg-[radial-gradient(closest-side,rgba(255,255,255,0.14),transparent)]" />
+      {/* Backdrop: photograph, petrol wash for legibility, faint chart-paper grid */}
+      <Image src="/photos/consult-clinic.jpg" alt="" fill priority sizes="(min-width: 1024px) 55vw, 100vw" className="-z-30 object-cover object-[60%_35%]" />
+      <div className="absolute inset-0 -z-20 bg-[linear-gradient(160deg,rgba(15,54,70,0.94)_0%,rgba(27,91,117,0.80)_50%,rgba(15,54,70,0.92)_100%)]" />
+      <div className="absolute inset-0 -z-10 opacity-[0.06] [background-image:linear-gradient(#fff_1px,transparent_1px),linear-gradient(90deg,#fff_1px,transparent_1px)] [background-size:28px_28px]" />
 
       <div>
         <p className="font-mono text-[11px] uppercase tracking-[0.16em] text-white/60">Smart India Hackathon 2026</p>
-        <h1 className="mt-3 max-w-[14ch] text-4xl font-semibold leading-[1.05] tracking-tight xl:text-5xl">
+        <h1 className="mt-3 max-w-[14ch] text-[44px] leading-[1.02] xl:text-[56px]">
           Speak the case.
           <br />
-          Sign the record.
+          <em className="font-normal italic text-white/85">Sign the record.</em>
         </h1>
-        <p className="mt-4 max-w-[40ch] text-[15px] leading-relaxed text-white/75">
+        <p className="mt-4 max-w-[40ch] text-[15px] leading-relaxed text-white/80">
           The patient speaks Hindi. The record must be English. Shruti listens in the patient&apos;s language and drafts a structured case sheet — every AI word marked, nothing signed until the doctor says so.
         </p>
       </div>
 
-      <div className="grid gap-4">
-        <ConsultScene className="mx-auto max-w-[460px]" />
+      {/* What a consultation becomes */}
+      <div className="grid gap-3">
+        <div className="flex items-center gap-3 rounded-xl bg-white/10 px-4 py-3 ring-1 ring-white/15 backdrop-blur-sm">
+          <Mic className="size-5 shrink-0" />
+          <p className="min-w-0 flex-1 truncate text-[15px]" lang="hi">
+            दो दिन से बुखार है, रात में ज़्यादा बढ़ जाता है…
+          </p>
+          <span className="shrink-0 rounded-full bg-white/15 px-2 py-0.5 font-mono text-[10px] uppercase tracking-[0.1em]">हिन्दी</span>
+        </div>
 
-        {/* The case sheet the scene produces */}
-        <div className="rounded-2xl bg-white p-4 text-foreground shadow-2xl shadow-black/30">
+        <div className="rounded-2xl bg-white p-4 text-foreground shadow-2xl shadow-black/40">
           <div className="mb-3 flex items-center justify-between border-b pb-2">
             <div>
-              <div className="text-sm font-semibold">Sunita Devi</div>
+              <div className="font-heading text-[15px] font-medium">Sunita Devi</div>
               <div className="font-mono text-[10px] text-muted-foreground">46/F · SHR-2026-0141 · Follow-up</div>
             </div>
             <span className="rounded-full border border-good/30 bg-good-soft px-2 font-mono text-[10px] font-medium uppercase tracking-[0.1em] text-good">94% documented</span>
@@ -43,11 +50,14 @@ export function Hero() {
         </div>
       </div>
 
-      <ul className="grid gap-3 text-sm sm:grid-cols-3">
-        <Feature icon={<Mic className="size-4" />} title="Six Indian languages" text="Hindi, Marathi, Tamil, Telugu, Bengali, English — spoken, not typed." />
-        <Feature icon={<Radar className="size-4" />} title="Gap radar" text="Flags what a complete record would include. Never a diagnosis." />
-        <Feature icon={<ShieldCheck className="size-4" />} title="Provenance" text="Every AI word is marked and must be accepted before signing." />
-      </ul>
+      <div>
+        <ul className="grid gap-3 text-sm sm:grid-cols-3">
+          <Feature icon={<Mic className="size-4" />} title="Six Indian languages" text="Hindi, Marathi, Tamil, Telugu, Bengali, English — spoken, not typed." />
+          <Feature icon={<Radar className="size-4" />} title="Gap radar" text="Flags what a complete record would include. Never a diagnosis." />
+          <Feature icon={<ShieldCheck className="size-4" />} title="Provenance" text="Every AI word is marked and must be accepted before signing." />
+        </ul>
+        <p className="mt-4 font-mono text-[9.5px] uppercase tracking-[0.12em] text-white/40">Photograph via Unsplash</p>
+      </div>
     </div>
   );
 }
@@ -69,12 +79,12 @@ function Row({ label, badge, text }: { label: string; badge: "accepted" | "draft
 
 function Feature({ icon, title, text }: { icon: React.ReactNode; title: string; text: string }) {
   return (
-    <li className="rounded-xl bg-white/8 p-3 ring-1 ring-white/12">
+    <li className="rounded-xl bg-white/10 p-3 ring-1 ring-white/15 backdrop-blur-sm">
       <div className="mb-1 flex items-center gap-2 font-medium">
         <span className="grid size-6 place-items-center rounded-md bg-white/15">{icon}</span>
         {title}
       </div>
-      <p className="text-[12.5px] leading-snug text-white/65">{text}</p>
+      <p className="text-[12.5px] leading-snug text-white/70">{text}</p>
     </li>
   );
 }

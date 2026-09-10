@@ -1,6 +1,7 @@
 "use client";
 
 import Link from "next/link";
+import Image from "next/image";
 import { ArrowRight, Stethoscope, Users, CalendarDays, PenLine, Gauge } from "lucide-react";
 import { api } from "@/lib/api";
 import { useAsync } from "@/lib/use-async";
@@ -30,9 +31,18 @@ export default function DashboardPage() {
 
   return (
     <>
-      <div className="relative">
-        <PageHeader eyebrow={today} title={`${greeting()}${shortName ? `, Dr. ${shortName}` : ""}`} description="What needs you today." />
-        <LanguageMosaic className="pointer-events-none absolute -top-3 right-0 hidden w-[230px] xl:block" />
+      <div className="mb-6 grid items-stretch gap-4 lg:grid-cols-[minmax(0,1fr)_360px]">
+        <div className="flex flex-col justify-between">
+          <PageHeader eyebrow={today} title={`${greeting()}${shortName ? `, Dr. ${shortName}` : ""}`} description="What needs you today." />
+          <LanguageMosaic className="hidden w-[260px] opacity-90 lg:block" />
+        </div>
+        <div className="relative hidden min-h-[190px] overflow-hidden rounded-xl ring-1 ring-foreground/10 lg:block">
+          <Image src="/photos/elderly-consult.jpg" alt="A doctor consulting with an elderly patient" fill sizes="360px" className="object-cover" />
+          <div className="absolute inset-x-0 bottom-0 bg-gradient-to-t from-black/60 to-transparent p-3 text-white">
+            <div className="font-heading text-[15px] leading-tight">Every consultation, in the patient&apos;s own words.</div>
+            <div className="mt-0.5 font-mono text-[10px] uppercase tracking-[0.12em] text-white/70">Then structured, verified, signed.</div>
+          </div>
+        </div>
       </div>
 
       <div className="mb-6 grid grid-cols-2 gap-3 lg:grid-cols-4">

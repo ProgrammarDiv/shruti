@@ -81,10 +81,10 @@ export function LanguageMosaic({ className }: P) {
   const bubbles: Array<[number, number, number, string, number, string]> = [
     [72, 70, 48, "हिन्दी", 20, "var(--accent)"],
     [180, 50, 40, "मराठी", 17, "var(--good-soft)"],
-    [270, 92, 44, "தமிழ்", 17, "var(--warm-soft)"],
+    [270, 92, 44, "தமிழ்", 17, "var(--warn-soft)"],
     [104, 156, 42, "తెలుగు", 17, "var(--prov-edited-soft)"],
     [206, 142, 38, "বাংলা", 17, "var(--flag-soft)"],
-    [292, 176, 30, "English", 12, "var(--surface-2)"],
+    [292, 176, 30, "English", 12, "var(--muted)"],
   ];
   return (
     <svg viewBox="0 0 340 220" className={cn("h-auto w-full", className)} role="img" aria-label="Speech bubbles in Hindi, Marathi, Tamil, Telugu, Bengali and English">

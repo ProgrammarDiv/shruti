@@ -2,6 +2,7 @@
 
 import { useState } from "react";
 import Link from "next/link";
+import Image from "next/image";
 import { useRouter } from "next/navigation";
 import { ArrowLeft, X } from "lucide-react";
 import { api } from "@/lib/api";
@@ -196,6 +197,12 @@ export default function NewPatientPage() {
         </Card>
 
         <div className="flex flex-col gap-4">
+          <div className="relative hidden h-40 overflow-hidden rounded-xl ring-1 ring-foreground/10 lg:block">
+            <Image src="/photos/mother-child.jpg" alt="A doctor consulting with a mother and her child" fill sizes="320px" className="object-cover object-center" />
+            <div className="absolute inset-x-0 bottom-0 bg-gradient-to-t from-black/60 to-transparent p-3 text-white">
+              <div className="font-heading text-[15px] leading-tight">One record from the first visit.</div>
+            </div>
+          </div>
           <Card size="sm">
             <CardContent>
               <div className="mb-2 font-mono text-[10px] uppercase tracking-[0.12em] text-muted-foreground">Consent · DPDP Act 2023</div>

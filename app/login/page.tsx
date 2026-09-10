@@ -56,7 +56,7 @@ function LoginForm() {
     <div className="w-full max-w-[400px]">
       <Wordmark className="mb-10" />
 
-      <h2 className="text-2xl font-semibold tracking-tight">{hasSupabase ? "Sign in to your clinic" : "Welcome to the demo"}</h2>
+      <h2 className="text-[30px] leading-tight">{hasSupabase ? "Sign in to your clinic" : "Welcome to the demo"}</h2>
       <p className="mt-1.5 text-sm text-muted-foreground">
         {hasSupabase ? "Use the account your clinic administrator created for you." : "Eight seeded patients, no sign-in, nothing leaves this browser."}
       </p>

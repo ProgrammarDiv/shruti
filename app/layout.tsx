@@ -1,18 +1,28 @@
 import type { Metadata } from "next";
-import { IBM_Plex_Sans, IBM_Plex_Mono } from "next/font/google";
+import { Newsreader, Instrument_Sans, JetBrains_Mono } from "next/font/google";
 import { TooltipProvider } from "@/components/ui/tooltip";
 import "./globals.css";
 
-const plexSans = IBM_Plex_Sans({
-  variable: "--font-sans",
+// Newsreader carries the headings — a text serif with real presence, the
+// voice of a printed case record rather than a SaaS dashboard. Instrument
+// Sans does the reading and the forms; JetBrains Mono the IDs, codes and vitals.
+const heading = Newsreader({
+  variable: "--font-heading",
   subsets: ["latin"],
   weight: ["400", "500", "600"],
+  style: ["normal", "italic"],
 });
 
-const plexMono = IBM_Plex_Mono({
+const sans = Instrument_Sans({
+  variable: "--font-sans",
+  subsets: ["latin"],
+  weight: ["400", "500", "600", "700"],
+});
+
+const mono = JetBrains_Mono({
   variable: "--font-mono",
   subsets: ["latin"],
-  weight: ["400", "500"],
+  weight: ["400", "500", "700"],
 });
 
 export const metadata: Metadata = {
@@ -22,7 +32,7 @@ export const metadata: Metadata = {
 
 export default function RootLayout({ children }: LayoutProps<"/">) {
   return (
-    <html lang="en" className={`${plexSans.variable} ${plexMono.variable} h-full antialiased`}>
+    <html lang="en" className={`${heading.variable} ${sans.variable} ${mono.variable} h-full antialiased`}>
       <body className="min-h-full flex flex-col">
         <TooltipProvider>{children}</TooltipProvider>
       </body>
